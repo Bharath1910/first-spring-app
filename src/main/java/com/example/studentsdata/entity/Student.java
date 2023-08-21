@@ -1,8 +1,13 @@
 package com.example.studentsdata.entity;
 
 import jakarta.persistence.*;
+import jakarta.transaction.Transactional;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 @Entity
+@Table(name = "student")
 class StudentEntity {
     @Id
     @Column(name = "id")
@@ -58,6 +63,24 @@ class StudentEntity {
     }
 }
 
+@Repository
 public class Student {
+    private EntityManager entityManager;
+    public Student(EntityManager entityManager) {
+        this.entityManager = entityManager;
+    }
 
+    @Transactional
+    public void save(StudentEntity entity) {
+        entityManager.persist(entity);
+    }
+
+    public StudentEntity findById(int id) {
+        return entityManager.find(StudentEntity.class, id);
+    }
+
+    public List<StudentEntity> fetchAll() {
+        TypedQuery<StudentEntity> query = entityManager.createQuery("SELECT StudentEntity", StudentEntity.class);
+        return query.getResultList();
+    }
 }
